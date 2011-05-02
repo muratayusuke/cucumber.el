@@ -80,6 +80,11 @@
 ;; Keywords and font locking
 ;;
 
+(defcustom cucumber-compilation-buffer-name "*compilation*"
+  "The compilation buffer name for cucumber"
+  :type 'string
+  :group 'cucumber)
+
 (when (featurep 'font-lock)
   (or (boundp 'font-lock-variable-name-face)
       (setq font-lock-variable-name-face font-lock-type-face)))
@@ -399,6 +404,21 @@ are loaded on startup.  If nil, don't load snippets.")
 
     (global-set-key (kbd "C-c ,r") redoer-cmd)))
 
+(defun cucumber-end-of-buffer-target-window (buf-name)
+  "end of line target window"
+  (let ((cur-window (selected-window))
+        (com-buffer (get-buffer buf-name)))
+    (if com-buffer
+        (let ((com-window (get-buffer-window com-buffer)))
+          (cond (com-window
+                 (unwind-protect
+                     (progn
+                       (select-window com-window)
+                       (with-no-warnings
+                         (goto-char (point-max))
+                         (recenter '(t))))
+                   (select-window cur-window))))))))
+
 (defun feature-run-cucumber (cuke-opts &optional &key feature-file)
   "Runs cucumber with the specified options"
   (feature-register-verify-redo (list 'feature-run-cucumber
@@ -413,7 +433,7 @@ are loaded on startup.  If nil, don't load snippets.")
     (ansi-color-for-comint-mode-on)
     (let ((default-directory (feature-project-root)))
       (compile (concat "rake cucumber CUCUMBER_OPTS=\"" opts-str "\"" feature-arg) t)))
-  (end-of-buffer-other-window 0))
+  (cucumber-end-of-buffer-target-window cucumber-compilation-buffer-name))
 
 (defun feature-escape-scenario-name (scenario-name)
   "Escapes all the characaters in a scenario name that mess up using in the -n options"
