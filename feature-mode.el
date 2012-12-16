@@ -192,7 +192,7 @@
                   (".*" nil nil (0 font-lock-type-face t)))
     (background . (0 font-lock-keyword-face))
     (scenario     (0 font-lock-keyword-face)
-                  (".*" nil nil (0 font-lock-function-name-face t)))
+                  (".*" nil nil (0 font-lock-function-name-face nil)))
     (scenario_outline
                   (0 font-lock-keyword-face)
                   (".*" nil nil (0 font-lock-function-name-face t)))
@@ -260,11 +260,11 @@
 
 (defcustom feature-indent-level 2
   "Indentation of feature statements"
-  :type 'integer :group 'feature)
+  :type 'integer :group 'feature-mode)
 
 (defcustom feature-indent-offset 2
   "*Amount of offset per level of indentation."
-  :type 'integer :group 'feature)
+  :type 'integer :group 'feature-mode)
 
 (defun feature-compute-indentation ()
   "Calculate the maximum sensible indentation for the current line."
